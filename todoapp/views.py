@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.contrib.auth import login
 
 def signupuser(request):
     if request.method == 'GET' :
@@ -13,6 +14,8 @@ def signupuser(request):
                 #create a new user
                 user = User.objects.create_user(request.POST['username'], password=request.POST['password1'])
                 user.save()
+                #login the user after signup
+                login(request, user)
             except IntegrityError:
                 return render(request, 'todoapp/signupuser.html', {'form':UserCreationForm(), 'error':'Username alredy exists'})
         else:
