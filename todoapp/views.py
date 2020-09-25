@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
+from .forms import TodoForm
 
 def home(request):
     return render(request, 'todoapp/home.html')
@@ -47,3 +48,15 @@ def logoutuser(request):
 
 def currenttodos(request):
     return render(request, 'todoapp/currenttodos.html')
+
+def createtodos(request):
+    if request.method == 'GET':
+        return render(request, 'todoapp/createtodos.html', {'form': TodoForm()})
+    else:
+        form = TodoForm(request.POST)
+        #to save form data, but not store in DB yet, by using commit=False
+        unstoredTodo = form.save(commit=False)
+        #assigning user to the unstored Todo
+        unstoredTodo.user = request.user
+        unstoredTodo.save()
+        return redirect('currenttodos')
