@@ -48,7 +48,7 @@ def logoutuser(request):
         return redirect('home')
 
 def currenttodos(request):
-    todos = Todo.objects.all()
+    todos = Todo.objects.filter(user=request.user)
     return render(request, 'todoapp/currenttodos.html', {'todos': todos})
 
 def createtodos(request):
