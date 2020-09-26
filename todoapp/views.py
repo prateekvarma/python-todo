@@ -53,10 +53,13 @@ def createtodos(request):
     if request.method == 'GET':
         return render(request, 'todoapp/createtodos.html', {'form': TodoForm()})
     else:
-        form = TodoForm(request.POST)
-        #to save form data, but not store in DB yet, by using commit=False
-        unstoredTodo = form.save(commit=False)
-        #assigning user to the unstored Todo
-        unstoredTodo.user = request.user
-        unstoredTodo.save()
-        return redirect('currenttodos')
+        try:  
+            form = TodoForm(request.POST)
+            #to save form data, but not store in DB yet, by using commit=False
+            unstoredTodo = form.save(commit=False)
+            #assigning user to the unstored Todo
+            unstoredTodo.user = request.user
+            unstoredTodo.save()
+            return redirect('currenttodos')
+        except ValueError:
+            return render(request, 'todoapp/createtodos.html', {'form': TodoForm(), 'error': 'Bad data entered, try again..'})
