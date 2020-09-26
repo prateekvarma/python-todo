@@ -2,4 +2,9 @@
 
 {% block content %}
     <h4>Current Todos</h4>
+    <ul>
+        {% for todo in todos %}
+        <li>{{ todo.title }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
