@@ -4,7 +4,11 @@
     <h4>Current Todos</h4>
     <ul>
         {% for todo in todos %}
-        <li>{{ todo.title }}</li>
+        <li>
+            {{ todo.title }}
+            {% if todo.important  %} <b>(important)</b> {% endif %}
+            {% if todo.memo  %} - {{ todo.memo }} {% endif %}
+        </li>
         {% endfor %}
     </ul>
 {% endblock %}
