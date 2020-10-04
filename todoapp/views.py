@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -15,7 +15,7 @@ def signupuser(request):
     else:
         #check password
         if request.POST['password1'] == request.POST['password2']:
-            try:               
+            try:
                 #create a new user
                 user = User.objects.create_user(request.POST['username'], password=request.POST['password1'])
                 user.save()
@@ -28,7 +28,7 @@ def signupuser(request):
         else:
             #passwords dont match
             return render(request, 'todoapp/signupuser.html', {'form':UserCreationForm(), 'error':'Passwords dont match'})
-            
+
 def loginuser(request):
     if request.method == 'GET' :
         return render(request, 'todoapp/loginuser.html', {'form':AuthenticationForm()})
@@ -51,11 +51,15 @@ def currenttodos(request):
     todos = Todo.objects.filter(user=request.user, datecomlpleted__isnull=True)
     return render(request, 'todoapp/currenttodos.html', {'todos': todos})
 
+def viewtodo(request, todo_pk):
+    todo = get_object_or_404(Todo, pk=todo_pk)
+    return render(request, 'todoapp/viewtodo.html', {'todo': todo})
+
 def createtodos(request):
     if request.method == 'GET':
         return render(request, 'todoapp/createtodos.html', {'form': TodoForm()})
     else:
-        try:  
+        try:
             form = TodoForm(request.POST)
             #to save form data, but not store in DB yet, by using commit=False
             unstoredTodo = form.save(commit=False)
