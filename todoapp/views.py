@@ -52,7 +52,8 @@ def currenttodos(request):
     return render(request, 'todoapp/currenttodos.html', {'todos': todos})
 
 def viewtodo(request, todo_pk):
-    todo = get_object_or_404(Todo, pk=todo_pk)
+    #The 'user=request.user' only pull up the todos related to specific user (owner)
+    todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
     if request.method == 'GET':
         form = TodoForm(instance=todo)
         return render(request, 'todoapp/viewtodo.html', {'todo': todo, 'form':form})
