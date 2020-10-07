@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from .forms import TodoForm
 from .models import Todo
+from django.utils import timezone
 
 def home(request):
     return render(request, 'todoapp/home.html')
@@ -80,3 +81,10 @@ def createtodos(request):
             return redirect('currenttodos')
         except ValueError:
             return render(request, 'todoapp/createtodos.html', {'form': TodoForm(), 'error': 'Bad data entered, try again..'})
+
+def completetodo(request, todo_pk):
+    todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
+    if request.method == 'POST':
+        todo.datecomlpleted = timezone.now()
+        todo.save()
+        return redirect('currenttodos')
