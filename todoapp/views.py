@@ -53,8 +53,17 @@ def currenttodos(request):
 
 def viewtodo(request, todo_pk):
     todo = get_object_or_404(Todo, pk=todo_pk)
-    form = TodoForm(instance=todo)
-    return render(request, 'todoapp/viewtodo.html', {'todo': todo, 'form':form})
+    if request.method == 'GET':
+        form = TodoForm(instance=todo)
+        return render(request, 'todoapp/viewtodo.html', {'todo': todo, 'form':form})
+    else:
+        try:
+            #The 'instance=todo' below is for django to recognize it's the same todo instance to refer
+            form = TodoForm(request.POST, instance=todo)
+            form.save()
+            return redirect('currenttodos')
+        except ValueError:
+            return render(request, 'todoapp/viewtodo.html', {'todo': todo, 'form':form, 'error': 'Invalid input, try again'})
 
 def createtodos(request):
     if request.method == 'GET':
