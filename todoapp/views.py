@@ -94,3 +94,7 @@ def deletetodo(request, todo_pk):
     if request.method == 'POST':
         todo.delete()
         return redirect('currenttodos')
+
+def completedtodos(request):
+    todos = Todo.objects.filter(user=request.user, datecomlpleted__isnull=False)
+    return render(request, 'todoapp/completedtodos.html', {'todos': todos})
