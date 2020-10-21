@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from .forms import TodoForm
 from .models import Todo
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, 'todoapp/home.html')
@@ -43,15 +44,18 @@ def loginuser(request):
             #redirect to current todos page
             return redirect('currenttodos')
 
+@login_required
 def logoutuser(request):
     if request.method == 'POST':
         logout(request)
         return redirect('home')
 
+@login_required
 def currenttodos(request):
     todos = Todo.objects.filter(user=request.user, datecomlpleted__isnull=True)
     return render(request, 'todoapp/currenttodos.html', {'todos': todos})
 
+@login_required
 def viewtodo(request, todo_pk):
     #The 'user=request.user' only pull up the todos related to specific user (owner)
     todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
@@ -67,6 +71,7 @@ def viewtodo(request, todo_pk):
         except ValueError:
             return render(request, 'todoapp/viewtodo.html', {'todo': todo, 'form':form, 'error': 'Invalid input, try again'})
 
+@login_required
 def createtodos(request):
     if request.method == 'GET':
         return render(request, 'todoapp/createtodos.html', {'form': TodoForm()})
@@ -82,6 +87,7 @@ def createtodos(request):
         except ValueError:
             return render(request, 'todoapp/createtodos.html', {'form': TodoForm(), 'error': 'Bad data entered, try again..'})
 
+@login_required
 def completetodo(request, todo_pk):
     todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
     if request.method == 'POST':
@@ -89,12 +95,14 @@ def completetodo(request, todo_pk):
         todo.save()
         return redirect('currenttodos')
 
+@login_required
 def deletetodo(request, todo_pk):
     todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
     if request.method == 'POST':
         todo.delete()
         return redirect('currenttodos')
 
+@login_required
 def completedtodos(request):
     todos = Todo.objects.filter(user=request.user, datecomlpleted__isnull=False).order_by('-datecomlpleted')
     return render(request, 'todoapp/completedtodos.html', {'todos': todos})
